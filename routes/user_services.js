@@ -4,8 +4,8 @@ const router=express.Router();
 const Joi=require('joi');
 const { string } = require('joi');
 const schema = Joi.object({
-    first_name:Joi.string().min(3).required(),
-    last_name:Joi.string().min(3).required(),
+    first_name:Joi.string().min(2).required(),
+    last_name:Joi.string().min(2).required(),
     email_id: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
 
     phonenumber:Joi.string().max(10).pattern(/^[0-9]+$/).required(),
@@ -58,7 +58,7 @@ const userSchema= new mongoose.Schema({
 const Users= mongoose.model('Users',userSchema)
 // const doc=new mongoose.Model();
 // doc._id instanceof mongoose.Types.ObjectId;
-router.post('/tocreateauser',async(req,res)=>{
+router.post('/create-user',async(req,res)=>{
     const {error}=schema.validate(req.body)
 
     if(error) {
@@ -70,12 +70,13 @@ router.post('/tocreateauser',async(req,res)=>{
         email_id:req.body.email_id,
         phonenumber:req.body.phonenumber
     })
-    //  if(!users) return res.status(404).send('error occurred pls try again')
+      if(!users) return res.status(404).send('error occurred please try again')
     try {
        users=await users.save();
-        res.status(200).send(users)
+       res.json({ status : 200,message : "User Created Successfully", });
+        
     } catch (error) {
-        res.status(500).send('some error occurred need to check').write('whatsapp')
+        res.status(500).send('Some error occurred ')
     
         console.log(error);
      
@@ -98,9 +99,9 @@ router.get('/',async(req,res)=>{
         
     // }
   
-    if(req.url!='/') return res.status(500).send("pls check the url")
+    if(req.url!='/') return res.status(500).send("please check the url")
     const users=await Users.find().sort('first_name')
-    if(!users) return res.status(404).send('error occurred pls try again')
+    if(!users) return res.status(404).send('error occurred please try again')
     res.send(users);
   
 });
@@ -118,7 +119,7 @@ router.get('/',async(req,res)=>{
 //         email_id:req.body.email_id,
 //         phonenumber:req.body.phonenumber
 //     })
-//     //  if(!users) return res.status(404).send('error occurred pls try again')
+//     //  if(!users) return res.status(404).send('error occurred please try again')
 //     try {
 //        users=await users.save();
 //         res.status(200).send(users)
@@ -157,8 +158,7 @@ router.put('/:id',async(req,res)=>{
           
         if(!users) return res.status(404).send('the user with the given id is not found')
    try{
-        res.status(200).send(users)
-   }
+    res.json({ status : 200,message : "Updated Successfully", });   }
    catch(error){
     res.status(500).send('some error occurred need to check')
 
@@ -172,9 +172,9 @@ router.put('/:id',async(req,res)=>{
 router.delete('/:id',async (req,res)=>{
    
     const users=await Users.findByIdAndRemove(req.params.id)
-    if(!users) return res.status(404).send('error occurred pls try again')
+    if(!users) return res.status(404).send('error occurred please try again')
    try{
-        res.status(200).send(users)
+    res.json({ status : 200,message : "Deleted Successfully", });    
    }
    catch(err){
 
@@ -188,11 +188,11 @@ router.delete('/:id',async (req,res)=>{
 router.get('/:id',async(req,res)=>{
    
     const users=await Users.findById(req.params.id);
-    if(!users) return res.status(404).send('error occurred pls try again')
+    if(!users) return res.status(404).send('error occurred please try again')
     try {
         res.status(200).send(users)
     } catch (error) {
-        res.status(404).send('some error occured need to check')
+        res.status(404).send('some error occured')
     }
        
   
@@ -200,17 +200,33 @@ router.get('/:id',async(req,res)=>{
     
     
 })
+
+
 router.patch('/:id',async(req,res)=>{
-    const users=await  Users.findByIdAndUpdate(req.params.id,{email_id:req.body.email_id
-     
-        },{new:true})
-        if(!users) return res.status(404).send('error occurred pls try again')
-   
-        res.status(200).send(users)
+
+    // const {error}=schema.validate(req.body)
+
+    // if(error) {
+    //     return res.status(400).send(error.details[0].message);
+    // }
+      
+  const users=await  Users.findByIdAndUpdate(req.params.id,{first_name:req.body.first_name,
+        last_name:req.body.last_name,
+        email_id:req.body.email_id,
+        phonenumber:req.body.phonenumber},{new:true})
+        
+          
+        if(!users) return res.status(404).send('the user with the given id is not found')
+   try{
+    res.json({ status : 200,message : "User Details Updated Successfully", });   }
+   catch(error){
+    res.status(500).send('some error occurred ')
+
+   }
+        // res.send(error)
+        
     
 })
-
-
 
 
 

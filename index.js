@@ -11,7 +11,7 @@ mongoose.connect('mongodb://localhost/user-services')
 .then(()=>console.log('Connected to mongodb'))
 .catch(err=>console.error('could not connect to mongodb'))
 app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({     // to support URL-encoded bodies
+app.use(bodyparser.urlencoded({    
   extended: true
 }));
 app.use('/userservices',userservices);
