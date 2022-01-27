@@ -1,6 +1,7 @@
 const express=require('express')
 const mongoose=require('mongoose')
 const router=express.Router();
+// const {Users}=require('../models/usermodel')
 const Joi=require('joi');
 const { string } = require('joi');
 const schema = Joi.object({
@@ -12,10 +13,6 @@ const schema = Joi.object({
 });
 
 // const {userValidation}  = require("./validator")
-
-
-
-
 const userSchema= new mongoose.Schema({
     first_name:{
         type:String,
@@ -52,10 +49,15 @@ const userSchema= new mongoose.Schema({
         //     },
         //     message: '{VALUE} is not a valid 10 digit number!'
         // }
-    }
-}) 
+    },
 
-const Users= mongoose.model('Users',userSchema)
+ }) 
+ const Users= mongoose.model('Users',userSchema)
+
+
+
+
+
 // const doc=new mongoose.Model();
 // doc._id instanceof mongoose.Types.ObjectId;
 router.post('/create-user',async(req,res)=>{
@@ -64,7 +66,9 @@ router.post('/create-user',async(req,res)=>{
     if(error) {
         return res.status(400).send(error.details[0].message);
     }
-    let users=new Users({
+    let users=await Users.findOne({email_id:req.body.email_id})
+    if (users) return res.status(400).send('User already registered.')
+     users=new Users({
         first_name:req.body.first_name,
         last_name:req.body.last_name,
         email_id:req.body.email_id,
@@ -72,7 +76,7 @@ router.post('/create-user',async(req,res)=>{
     })
       if(!users) return res.status(404).send('error occurred please try again')
     try {
-       users=await users.save();
+       await users.save();
        res.json({ status : 200,message : "User Created Successfully", });
         
     } catch (error) {
@@ -218,7 +222,8 @@ router.patch('/:id',async(req,res)=>{
           
         if(!users) return res.status(404).send('the user with the given id is not found')
    try{
-    res.json({ status : 200,message : "User Details Updated Successfully", });   }
+        res.status(200).send(users)
+   }
    catch(error){
     res.status(500).send('some error occurred ')
 
