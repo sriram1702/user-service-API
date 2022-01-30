@@ -29,22 +29,11 @@ const userSchema= new mongoose.Schema({
     phonenumber:{
         type: Number,
         
-        // validate: {
-        //     validator: function(v) {
-        //         return /d{10}/.test(v);
-        //     },
-        //     message: '{VALUE} is not a valid 10 digit number!'
-        // }
+        
     },
 
  }) 
  const Users= mongoose.model('Users',userSchema)
-// function test(){
-//     console.log("dskjdhskds")
-// }
-// test();
- module.exports=Users;
-// module.exports=test;
-// export default test;
 
-//  exports.Users=Users;
+ module.exports=Users;
+
